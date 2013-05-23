@@ -11,33 +11,50 @@ $(function () {
         hoverColour: 'yellow'
     });
 
-    active_nodes = [];
+    var active_sounds = {};
 
-    function playNote(frequency) {
-        var oscillator = context.createOscillator(),
-        gainNode = context.createGain();
+    var Sound = (function() {
+        function Sound(frequency){
+            this.frequency = frequency;
+            this.nodes = [];
+        };
 
-        oscillator.type = oscillator.SQUARE;
-        oscillator.frequency.value = frequency;
-        gainNode.gain.value = 0.3;
-        oscillator.connect(gainNode);
-        oscillator.start(0);
+        Sound.prototype.start = function() {
+            var oscillator = context.createOscillator();
+            gainNode = context.createGain();
 
-        gainNode.connect(context.destination);
-        return oscillator;
-    };
+            oscillator.type = oscillator.SQUARE;
+            oscillator.frequency.value = this.frequency;
+            oscillator.connect(gainNode);
 
-    keyboard.keyDown(function (_, frequency) {
-        oscillator = playNote(frequency);
-        active_nodes.push(oscillator);
+            /* envelope */
+            var now = context.currentTime;
+            gainNode.gain.linearRampToValueAtTime(1.0, now + 0.1);
+            gainNode.gain.exponentialRampToValueAtTime(0.2, now + 0.3);
+
+            oscillator.start(now);
+
+            gainNode.connect(context.destination);
+            this.nodes.push(oscillator);
+        };
+
+        Sound.prototype.stop = function() {
+            for (var i = 0; i < this.nodes.length; i++) {
+                this.nodes[i].stop(0);
+            }
+        };
+
+        return Sound;
+    })();
+
+    keyboard.keyDown(function (note, frequency) {
+        var sound = new Sound(frequency);
+        sound.start()
+        active_sounds[note] = sound;
     });
 
-    keyboard.keyUp(function (_, frequency) {
-        for (var i = 0; i < active_nodes.length; i++) {
-            if (Math.round(active_nodes[i].frequency.value) === Math.round(frequency)) {
-                active_nodes[i].stop(0);
-                active_nodes[i].disconnect();
-            }
-        }
+    keyboard.keyUp(function (note, _) {
+        active_sounds[note].stop();
+        delete active_sounds[note];
     });
 });
