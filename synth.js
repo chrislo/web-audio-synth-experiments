@@ -5,7 +5,7 @@ $(function () {
         id: 'keyboard',
         width: 600,
         height: 150,
-        startNote: 'A3',
+        startNote: 'A1',
         whiteNotesColour: 'white',
         blackNotesColour: 'black',
         hoverColour: 'yellow'
@@ -20,22 +20,45 @@ $(function () {
         };
 
         Sound.prototype.start = function() {
-            var oscillator = context.createOscillator();
-            gainNode = context.createGain();
 
+            var now = context.currentTime;
+
+            /* Oscillator */
+            var oscillator = context.createOscillator();
             oscillator.type = oscillator.SQUARE;
             oscillator.frequency.value = this.frequency;
-            oscillator.connect(gainNode);
 
-            /* envelope */
-            var now = context.currentTime;
-            gainNode.gain.linearRampToValueAtTime(1.0, now + 0.1);
-            gainNode.gain.exponentialRampToValueAtTime(0.2, now + 0.3);
+            /* LFO */
+            var lfo = context.createOscillator();
+            lfo.type = lfo.SINE;
+            lfo.frequency.value = 5;
+
+            /* LFO amplitude */
+            var lfo_amplitude = context.createGain();
+            lfo_amplitude.gain.value = 50;
+
+            /* Low-pass filter */
+            var filter = context.createBiquadFilter();
+            filter.frequency.value = this.frequency * 2;
+            filter.type = filter.LOWPASS;
+            filter.Q.value = 1;
+
+            /* output gain */
+            var gain = context.createGain();
+            gain.gain.value = 0.3;
+
+            /* connect it up */
+            oscillator.connect(filter);
+            filter.connect(gain);
+            gain.connect(context.destination);
+            lfo.connect(lfo_amplitude);
+            lfo_amplitude.connect(filter.frequency);
 
             oscillator.start(now);
+            lfo.start(now);
 
-            gainNode.connect(context.destination);
             this.nodes.push(oscillator);
+            this.nodes.push(lfo);
         };
 
         Sound.prototype.stop = function() {
