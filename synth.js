@@ -13,7 +13,7 @@ $(function () {
 
     var active_sounds = {};
 
-    var Sound = (function() {
+    var Sound = (function(context) {
         function Sound(frequency){
             this.frequency = frequency;
             this.nodes = [];
@@ -68,7 +68,7 @@ $(function () {
         };
 
         return Sound;
-    })();
+    })(context);
 
     keyboard.keyDown(function (note, frequency) {
         var sound = new Sound(frequency);
