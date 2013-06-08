@@ -1,83 +1,38 @@
 $(function () {
-    var context = new AudioContext();
+  var context = new AudioContext();
 
-    var keyboard = qwertyHancock({
-        id: 'keyboard',
-        width: 600,
-        height: 150,
-        startNote: 'A1',
-        whiteNotesColour: 'white',
-        blackNotesColour: 'black',
-        hoverColour: 'yellow'
-    });
+  var keyboard = qwertyHancock({id: 'keyboard'});
 
-    var active_sounds = {};
+  var Voice = (function(context) {
+    function Voice(frequency){
+      this.frequency = frequency;
+    };
 
-    var Sound = (function(context) {
-        function Sound(frequency){
-            this.frequency = frequency;
-            this.nodes = [];
-        };
+    Voice.prototype.trigger = function() {
+      /* VCO */
+      var vco = context.createOscillator();
+      vco.type = vco.SINE;
+      vco.frequency.value = this.frequency;
 
-        Sound.prototype.start = function() {
+      /* VCA */
+      var vca = context.createGain();
+      vca.gain.value = 0.3;
 
-            var now = context.currentTime;
+      /* connections */
+      vco.connect(vca);
+      vca.connect(context.destination);
 
-            /* Oscillator */
-            var oscillator = context.createOscillator();
-            oscillator.type = oscillator.SQUARE;
-            oscillator.frequency.value = this.frequency;
+      vco.start(0);
+    };
 
-            /* LFO */
-            var lfo = context.createOscillator();
-            lfo.type = lfo.SINE;
-            lfo.frequency.value = 5;
+    return Voice;
+  })(context);
 
-            /* LFO amplitude */
-            var lfo_amplitude = context.createGain();
-            lfo_amplitude.gain.value = 50;
+  keyboard.keyDown(function (_, frequency) {
+    var voice = new Voice(frequency);
+    voice.trigger()
+  });
 
-            /* Low-pass filter */
-            var filter = context.createBiquadFilter();
-            filter.frequency.value = this.frequency * 2;
-            filter.type = filter.LOWPASS;
-            filter.Q.value = 1;
-
-            /* output gain */
-            var gain = context.createGain();
-            gain.gain.value = 0.3;
-
-            /* connect it up */
-            oscillator.connect(filter);
-            filter.connect(gain);
-            gain.connect(context.destination);
-            lfo.connect(lfo_amplitude);
-            lfo_amplitude.connect(filter.frequency);
-
-            oscillator.start(now);
-            lfo.start(now);
-
-            this.nodes.push(oscillator);
-            this.nodes.push(lfo);
-        };
-
-        Sound.prototype.stop = function() {
-            for (var i = 0; i < this.nodes.length; i++) {
-                this.nodes[i].stop(0);
-            }
-        };
-
-        return Sound;
-    })(context);
-
-    keyboard.keyDown(function (note, frequency) {
-        var sound = new Sound(frequency);
-        sound.start()
-        active_sounds[note] = sound;
-    });
-
-    keyboard.keyUp(function (note, _) {
-        active_sounds[note].stop();
-        delete active_sounds[note];
-    });
+  keyboard.keyUp(function (note, _) {
+  });
 });
