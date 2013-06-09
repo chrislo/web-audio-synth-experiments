@@ -8,7 +8,7 @@ $(function () {
       this.frequency = frequency;
     };
 
-    Voice.prototype.trigger = function() {
+    Voice.prototype.start = function() {
       /* VCO */
       var vco = context.createOscillator();
       vco.type = vco.SINE;
@@ -30,7 +30,7 @@ $(function () {
 
   keyboard.keyDown(function (_, frequency) {
     var voice = new Voice(frequency);
-    voice.trigger()
+    voice.start()
   });
 
   keyboard.keyUp(function (note, _) {
