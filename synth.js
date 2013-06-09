@@ -39,11 +39,16 @@ $(function () {
     return Voice;
   })(context);
 
-  keyboard.keyDown(function (_, frequency) {
+  active_voices = {};
+
+  keyboard.keyDown(function (note, frequency) {
     var voice = new Voice(frequency);
-    voice.start()
+    active_voices[note] = voice;
+    voice.start();
   });
 
   keyboard.keyUp(function (note, _) {
+    active_voices[note].stop();
+    delete active_voices[note];
   });
 });
