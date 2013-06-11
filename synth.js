@@ -6,7 +6,7 @@ $(function () {
   var Voice = (function(context) {
     function Voice(frequency){
       this.frequency = frequency;
-      this.nodes = [];
+      this.oscillators = [];
     };
 
     Voice.prototype.start = function() {
@@ -25,14 +25,13 @@ $(function () {
 
       vco.start(0);
 
-      /* Keep track of the nodes used */
-      this.nodes.push(vco);
-      this.nodes.push(vca);
+      /* Keep track of the oscillators used */
+      this.oscillators.push(vco);
     };
 
     Voice.prototype.stop = function() {
-      jQuery.each(this.nodes, function(_, node) {
-        node.disconnect();
+      jQuery.each(this.oscillators, function(_, oscillator) {
+        oscillator.stop(0);
       });
     };
 
