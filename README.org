@@ -1,0 +1,6 @@
+* Web Audio Synthesis Experiments
+
+Experimentation with the Web Audio API for synthesis. Feel free to
+poke around the repo and its various branches, but this is really
+just a scratch pad for experiments that may make their way into my
+blog post series on [[http://blog.chrislowis.co.uk/][synthesis with the Web Audio API]].
