@@ -5,7 +5,7 @@ $(function () {
 
     /* VCO */
     var vco = context.createOscillator();
-    vco.type = vco.SINE;
+    vco.type = vco.SAWTOOTH;
     vco.frequency.value = this.frequency;
     vco.start(0);
 
