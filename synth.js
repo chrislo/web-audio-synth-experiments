@@ -1,5 +1,5 @@
 $(function () {
-    var keyboard = qwertyHancock({id: 'keyboard'});
+    var keyboard = qwertyHancock({id: 'keyboard', startNote: 'A4', octaves: 2});
 
     var context = new AudioContext();
 
