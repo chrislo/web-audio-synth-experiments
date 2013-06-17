@@ -16,12 +16,20 @@
 $(function () {
   var keyboard = qwertyHancock({id: 'keyboard', startNote: 'A4', octaves: 2});
 
+  $("#attack").knob({
+    'release' : function (v) { jQuery.event.trigger('setAttack', v / 100); }
+  });
+
+  $("#decay").knob({
+    'release' : function (v) { jQuery.event.trigger('setDecay', v / 100); }
+  });
+
   var context = new AudioContext();
 
   var VCO = (function(context) {
     function VCO(){
       this.oscillator = context.createOscillator();
-      this.oscillator.type = this.oscillator.SAWTOOTH;
+      this.oscillator.type = this.oscillator.SINE;
       this.setFrequency(440);
       this.oscillator.start(0);
 
@@ -71,23 +79,26 @@ $(function () {
 
   var EnvelopeGenerator = (function(context) {
     function EnvelopeGenerator() {
+      this.attackTime = 0.1;
+      this.decayTime = 0.1;
+
       var that = this;
       $(document).bind('gateOn', function (_) {
-        that.attack();
+        that.trigger();
       });
-      $(document).bind('gateOff', function (_) {
-        that.release();
+      $(document).bind('setAttack', function (_, value) {
+        that.attackTime = value;
+      });
+      $(document).bind('setDecay', function (_, value) {
+        that.decayTime = value;
       });
     };
 
-    EnvelopeGenerator.prototype.attack = function() {
+    EnvelopeGenerator.prototype.trigger = function() {
       now = context.currentTime;
-      this.param.linearRampToValueAtTime(1, now + 0.01);
-    };
-
-    EnvelopeGenerator.prototype.release = function() {
-      now = context.currentTime;
-      this.param.linearRampToValueAtTime(0, now + 0.01);
+      this.param.cancelScheduledValues(now);
+      this.param.linearRampToValueAtTime(1, now + this.attackTime);
+      this.param.linearRampToValueAtTime(0, now + this.attackTime + this.decayTime);
     };
 
     EnvelopeGenerator.prototype.connect = function(param) {
@@ -106,22 +117,10 @@ $(function () {
   envelope.connect(vca.amplitude);
   vca.connect(context.destination);
 
-  var isEmpty = function(obj) {
-    return Object.keys(obj).length === 0;
-  }
-
-  depressed_keys = {}
-
   keyboard.keyDown(function (note, frequency) {
-    depressed_keys[note] = true;
     jQuery.event.trigger('frequency', [frequency] );
     jQuery.event.trigger('gateOn');
   });
 
-  keyboard.keyUp(function (note, _) {
-    delete depressed_keys[note];
-    if (isEmpty(depressed_keys)) {
-      jQuery.event.trigger('gateOff');
-    }
-  });
+  keyboard.keyUp(function (_, _) { });
 });

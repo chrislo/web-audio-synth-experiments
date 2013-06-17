@@ -7,9 +7,34 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script src="raphael-min.js"></script>
     <script src="qwerty-hancock.js"></script>
+    <script src="jquery.knob.js"></script>
     <script src="synth.js"></script>
   </head>
   <body>
     <div id="keyboard"></div>
+
+    <div>
+      <h2>Attack</h2>
+      <input id="attack"
+             data-width="100"
+             data-angleOffset="-125"
+             data-angleArc="250"
+             data-fgColor="#66EE66"
+             value="10"
+             data-min="0"
+             data-max="100">
+    </div>
+
+    <div>
+      <h2>Decay</h2>
+      <input id="decay"
+             data-width="100"
+             data-angleOffset="-125"
+             data-angleArc="250"
+             data-fgColor="#66EE66"
+             value="10"
+             data-min="0"
+             data-max="100">
+    </div>
   </body>
 </html>
