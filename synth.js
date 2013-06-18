@@ -97,6 +97,7 @@ $(function () {
     EnvelopeGenerator.prototype.trigger = function() {
       now = context.currentTime;
       this.param.cancelScheduledValues(now);
+      this.param.setValueAtTime(0, now);
       this.param.linearRampToValueAtTime(1, now + this.attackTime);
       this.param.linearRampToValueAtTime(0, now + this.attackTime + this.decayTime);
     };
