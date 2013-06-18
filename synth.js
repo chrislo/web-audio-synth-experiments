@@ -29,7 +29,7 @@ $(function () {
   var VCO = (function(context) {
     function VCO(){
       this.oscillator = context.createOscillator();
-      this.oscillator.type = this.oscillator.SINE;
+      this.oscillator.type = this.oscillator.SAWTOOTH;
       this.setFrequency(440);
       this.oscillator.start(0);
 
