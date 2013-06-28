@@ -27,8 +27,8 @@ $(function () {
     'release' : function (v) { jQuery.event.trigger('setAttack', v / 100); }
   });
 
-  $("#decay").knob({
-    'release' : function (v) { jQuery.event.trigger('setDecay', v / 100); }
+  $("#release").knob({
+    'release' : function (v) { jQuery.event.trigger('setRelease', v / 100); }
   });
 
   var context = new AudioContext();
@@ -87,7 +87,7 @@ $(function () {
   var EnvelopeGenerator = (function(context) {
     function EnvelopeGenerator() {
       this.attackTime = 0.1;
-      this.decayTime = 0.1;
+      this.releaseTime = 0.1;
 
       var that = this;
       $(document).bind('gateOn', function (_) {
@@ -96,8 +96,8 @@ $(function () {
       $(document).bind('setAttack', function (_, value) {
         that.attackTime = value;
       });
-      $(document).bind('setDecay', function (_, value) {
-        that.decayTime = value;
+      $(document).bind('setRelease', function (_, value) {
+        that.releaseTime = value;
       });
     };
 
@@ -106,7 +106,7 @@ $(function () {
       this.param.cancelScheduledValues(now);
       this.param.setValueAtTime(0, now);
       this.param.linearRampToValueAtTime(1, now + this.attackTime);
-      this.param.linearRampToValueAtTime(0, now + this.attackTime + this.decayTime);
+      this.param.linearRampToValueAtTime(0, now + this.attackTime + this.releaseTime);
     };
 
     EnvelopeGenerator.prototype.connect = function(param) {
