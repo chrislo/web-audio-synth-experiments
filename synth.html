@@ -9,11 +9,17 @@
     <script src="qwerty-hancock.js"></script>
     <script src="jquery.knob.js"></script>
     <script src="synth.js"></script>
+    <style>
+      .knob {
+        float: left;
+        margin-right: 20px;
+      }
+    </style>
   </head>
   <body>
     <div id="keyboard"></div>
 
-    <div>
+    <div class="knob">
       <h2>Attack</h2>
       <input id="attack"
              data-width="100"
@@ -25,7 +31,7 @@
              data-max="100">
     </div>
 
-    <div>
+    <div class="knob">
       <h2>Decay</h2>
       <input id="decay"
              data-width="100"
