@@ -16,6 +16,13 @@
 $(function () {
   var keyboard = qwertyHancock({id: 'keyboard', startNote: 'A4', octaves: 2});
 
+  keyboard.keyDown(function (note, frequency) {
+    jQuery.event.trigger('frequency', [frequency] );
+    jQuery.event.trigger('gateOn');
+  });
+
+  keyboard.keyUp(function (_, _) { });
+
   $("#attack").knob({
     'release' : function (v) { jQuery.event.trigger('setAttack', v / 100); }
   });
@@ -117,11 +124,4 @@ $(function () {
   vco.connect(vca);
   envelope.connect(vca.amplitude);
   vca.connect(context.destination);
-
-  keyboard.keyDown(function (note, frequency) {
-    jQuery.event.trigger('frequency', [frequency] );
-    jQuery.event.trigger('gateOn');
-  });
-
-  keyboard.keyUp(function (_, _) { });
 });
